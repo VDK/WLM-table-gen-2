@@ -40,13 +40,14 @@ class Sections extends \dependencies\BaseViews
   {
     
     //Read CSV file.
-    $this->helper( 'read_csv_file', tx('Data')->files->csv->tmp_name );
+    $csv = $this->helper( 'read_csv_file', tx('Data')->files->csv->tmp_name );
+    $heads = $csv[0];
     return array(
-      'cbs_nrs' =>  $this
-        ->table('CbsNr')
-        ->order('gemeente')
-        ->execute()
+      'cbs_nrs' =>  $this->table('CbsNr')->order('gemeente')->execute(),
+      'table_headers' => $heads,
+      'table_data' => serialize($csv)
     );
+
 
   }
   

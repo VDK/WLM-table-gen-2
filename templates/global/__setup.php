@@ -74,7 +74,37 @@ echo load_plugin('jquery_ui');
       <td>???</td>
     </tr>
   </table>
-
+  <h3>Rijksdriehoekco&#246;rdinaten</h3>
+<table>
+  <tr>
+    <td >Zijn er Rijksdriehoekco&#246;rdinaten aangeleverd?</td>
+  </tr>
+  <tr align="right" >
+    <td colspan="2">
+      <input type="radio" name="rd" id="ja" value="true">
+      <label for="ja">ja</label>
+      <input type="radio" name="rd" id="nee" value="false" checked>
+      <label for="nee">nee</label>
+    </td>
+  </tr>
+  <tr>
+      <td><label for "x_coord">X coördinaat:</td>
+      <td><?php 
+            var_dump($data->table_headers);?>
+        <select>
+          <?php
+            for ($i=0; $i <count($data->table_headers) ; $i++) { 
+              echo "<option value='$i'>$data->table_headers[$i]</option>";
+            }
+        ?>
+      </select>
+    </td>
+    </tr>
+     <tr>
+      <td><label for "Y_coord">Y coördinaat:</td>
+      <td>???</td>
+    </tr>
+  </table>
   <h2>Broninformatie</h2>
   <p>Optioneel:</p>
   <table>
@@ -100,6 +130,7 @@ echo load_plugin('jquery_ui');
     </tr>
   </table>  
   <p>
+    <input type="hidden" value='<?php echo $data->table_data;?>' name="table_data" />
     <input type=submit value="Go Go Go!"/>
   </p>
 </form>
