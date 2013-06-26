@@ -41,10 +41,13 @@ class Sections extends \dependencies\BaseViews
     
     //Read CSV file.
     $csv = $this->helper( 'read_csv_file', tx('Data')->files->csv->tmp_name );
-    $heads = $csv[0];
+    $head_options = "";
+    for ($i=0; $i <count($csv[0]) ; $i++) { 
+      $head_options.="<option value='$i'>{$csv[0][$i]}</option>\n";
+    }
     return array(
       'cbs_nrs' =>  $this->table('CbsNr')->order('gemeente')->execute(),
-      'table_headers' => $heads,
+      'table_headers' => $head_options,
       'table_data' => serialize($csv)
     );
 

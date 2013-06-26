@@ -163,9 +163,9 @@ class Helpers extends \dependencies\BaseComponent
       $datum = str_replace("November",     "november",     $datum);
      
       // Vervang de maand, kort
+      $datum = str_replace("Mar",          "Maa",          $datum);
       $datum = str_replace("May",          "Mei",          $datum);
       $datum = str_replace("Oct",          "Okt",          $datum);
-      $datum = str_replace("Mar",          "Maa",          $datum);
      
       // Vervang de dag, klein
       $datum = str_replace("monday",       "maandag",      $datum);
