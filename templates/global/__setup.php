@@ -1,5 +1,4 @@
 <?php
-
 echo load_plugin('jquery_ui');
 
 ?>
@@ -25,15 +24,19 @@ echo load_plugin('jquery_ui');
     </tr>
   </table>
   <h2>Match tabel kolommen</h2>
-  <table>
+  <table class="table">
     <tr>
       <tr>
         <td><label for="object">Object:</label></td>
-        <td>
-          <select name="object">
+        <td> 
+          <select name="object" class="clonedInput" >
             <option value="n">  </option>
             <?php echo $data->table_headers; ?>
           </select>
+        </td>
+        <td>
+          <input type="button" id="btnAdd" class="add button" value="+" />
+          <input type="button" id="btnDel" class="remove button" value="-" />
         </td>
       </tr>
     <tr>
@@ -43,6 +46,10 @@ echo load_plugin('jquery_ui');
           <option value="n">  </option>
           <?php echo $data->table_headers; ?>
         </select>
+      </td>
+      <td>
+        <input type="button" id="btnAdd2" class="add button" value="+" />
+        <input type="button" id="btnDel2" class="remove button" value="-" />
       </td>
     </tr>
     <tr>
@@ -55,9 +62,45 @@ echo load_plugin('jquery_ui');
       </td>
     </tr>
     <tr>
-      <td><label for="adres">Adres:</label></td>
+      <td><label for="adres">Adres/straat:</label></td>
       <td>
         <select name="adres">
+          <option value="n">  </option>
+          <?php echo $data->table_headers; ?>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td><label for="huisnummer">Huisnummer:</label></td>
+      <td>
+        <select name="huisnummer">
+          <option value="n">  </option>
+          <?php echo $data->table_headers; ?>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td><label for="toevoegsel">Toevoegsel (bijv. A of Bis):</label></td>
+      <td>
+        <select name="toevoegsel">
+          <option value="n">  </option>
+          <?php echo $data->table_headers; ?>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td><label for="positionering">Positionering (bijv.: "bij" of "t.o."):</label></td>
+      <td>
+        <select name="positionering">
+          <option value="n">  </option>
+          <?php echo $data->table_headers; ?>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td><label for="postcode">Postcode:</label></td>
+      <td>
+        <select name="postcode">
           <option value="n">  </option>
           <?php echo $data->table_headers; ?>
         </select>
@@ -140,9 +183,7 @@ echo load_plugin('jquery_ui');
 <table>
   <tr>
     <td >Zijn er Rijksdriehoekco&#246;rdinaten aangeleverd?</td>
-  </tr>
-  <tr align="right" >
-    <td colspan="2">
+    <td align="right">
       <input type="radio" name="rd" id="ja" value="true">
       <label for="ja">ja</label>
       <input type="radio" name="rd" id="nee" value="false" checked>
@@ -228,6 +269,21 @@ $('#setup_form input[name="wikigem"]').change(function() {
   var selectedGem=$('#setup_form input[name="wikigem"]').val();
    $("a#testurl").attr("href", "http://nl.wikipedia.org/wiki/"+selectedGem);
    $('#setup_form input[name="uitgever"]').val("[["+selectedGem+"|Gemeente "+$('#setup_form select[name="cbs_nr_id"]').find(":selected").text()+"]]");
+});
+
+$('.remove').hide();
+$('.add').on('click', function(){
+  $(this).parent().children(".remove").show();
+  $(this).parent().append("<div class='extra'>" 
+    + "<select> <option value='0'>spatie</option>"
+    +" <option value='1'>geen spatie</option>"
+    +" <option value='2'>spatie + cursief</option>"
+    +" <option value='3'>streepje</option>"
+    + "</select><select/></div>");
+});
+
+$('.remove').on('click', function(){
+ $(this).parent().children(".extra").remove();
 });
 
 </script>
