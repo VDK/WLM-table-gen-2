@@ -315,7 +315,7 @@ $('.add').on('click', function(){
     +   "<option value='2'>spatie + cursief</option>"
     +   "<option value='3'>streepje</option>"
     + "</select><select name='"+ $(this).parent().parent().children("td").children("select").attr("name") + "_"+$(this).parent().children(".extra").length+"_1'>"
-    +   "<option value=''n'>  </option>"
+    +   "<option value='n'>  </option>"
     +   "<?php echo $data->table_headers; ?>"
     + "</select></div>");
 });
