@@ -20,7 +20,7 @@ echo load_plugin('jquery_ui');
     <tr>
       <td>Wikipedia artikel:</td>
       <td><input type=text name="wikigem" value=""/></td>
-      <td><a href="" target="blanc" id="testurl" class="external" style="view:hidden">test</a></td>
+      <td><a href="" target="blanc" id="testurl" class="external">test</a></td>
     </tr>
   </table>
   <h2>Match tabel kolommen</h2>
@@ -34,22 +34,22 @@ echo load_plugin('jquery_ui');
             <?php echo $data->table_headers; ?>
           </select>
         </td>
-        <td>
-          <input type="button" id="btnAdd" class="add button" value="+" />
-          <input type="button" id="btnDel" class="remove button" value="-" />
+        <td class="buttons">
+          <input type="button" class="add button" value="+" />
+          <input type="button" class="remove button" value="-" />
         </td>
       </tr>
-    <tr>
+    <tr >
       <td><label for="bouwjaar">Bouwjaar:</label></td>
-      <td>
+      <td >
         <select name="bouwjaar">
           <option value="n">  </option>
           <?php echo $data->table_headers; ?>
         </select>
       </td>
-      <td>
-        <input type="button" id="btnAdd2" class="add button" value="+" />
-        <input type="button" id="btnDel2" class="remove button" value="-" />
+      <td class="buttons">
+        <input type="button"  class="add button" value="+" />
+        <input type="button"  class="remove button" value="-" />
       </td>
     </tr>
     <tr>
@@ -59,6 +59,10 @@ echo load_plugin('jquery_ui');
           <option value="n">  </option>
           <?php echo $data->table_headers; ?>
         </select>
+      </td>
+      <td class="buttons">
+        <input type="button"  class="add button" value="+" />
+        <input type="button"  class="remove button" value="-" />
       </td>
     </tr>
     <tr>
@@ -80,7 +84,7 @@ echo load_plugin('jquery_ui');
       </td>
     </tr>
     <tr>
-      <td><label for="toevoegsel">Toevoegsel (bijv. A of Bis):</label></td>
+      <td><label for="toevoegsel">Toevoegsel:<br/><small> (bijv. A of Bis)</small></label></td>
       <td>
         <select name="toevoegsel">
           <option value="n">  </option>
@@ -89,7 +93,7 @@ echo load_plugin('jquery_ui');
       </td>
     </tr>
     <tr>
-      <td><label for="positionering">Positionering (bijv.: "bij" of "t.o."):</label></td>
+      <td><label for="positionering">Positionering:<br/><small>(bijv.: "bij" of "t.o.")</smalll></label></td>
       <td>
         <select name="positionering">
           <option value="n">  </option>
@@ -104,6 +108,10 @@ echo load_plugin('jquery_ui');
           <option value="n">  </option>
           <?php echo $data->table_headers; ?>
         </select>
+      </td>
+      <td class="buttons">
+        <input type="button"  class="add button" value="+" />
+        <input type="button"  class="remove button" value="-" />
       </td>
     </tr>
     <tr>
@@ -123,6 +131,10 @@ echo load_plugin('jquery_ui');
           <?php echo $data->table_headers; ?>
         </select>
       </td>
+      <td class="buttons">
+        <input type="button"  class="add button" value="+" />
+        <input type="button"  class="remove button" value="-" />
+      </td>
     </tr>
     <tr>
       <td><label for="mip"><a href="http://nl.wikipedia.org/wiki/Monumenten_Inventarisatie_Project" target="_blanc">MIP</a> nummer:</label></td>
@@ -131,6 +143,10 @@ echo load_plugin('jquery_ui');
           <option value="n">  </option>
           <?php echo $data->table_headers; ?>
         </select>
+      </td>
+      <td class="buttons">
+        <input type="button" id="btnAdd2" class="add button" value="+" />
+        <input type="button"  class="remove button" value="-" />
       </td>
     </tr>
     <tr>
@@ -141,6 +157,10 @@ echo load_plugin('jquery_ui');
           <?php echo $data->table_headers; ?>
         </select>
       </td>
+      <td class="buttons">
+        <input type="button"  class="add button" value="+" />
+        <input type="button"  class="remove button" value="-" />
+      </td>
     </tr>
     <tr>
       <td><label for="rijksmonument">Rijksmonumentnummer:</label></td>
@@ -149,6 +169,10 @@ echo load_plugin('jquery_ui');
           <option value="n">  </option>
           <?php echo $data->table_headers; ?>
         </select>
+      </td>
+      <td class="buttons">
+        <input type="button"  class="add button" value="+" />
+        <input type="button"  class="remove button" value="-" />
       </td>
     </tr>
      <tr>
@@ -159,6 +183,10 @@ echo load_plugin('jquery_ui');
           <?php echo $data->table_headers; ?>
         </select>
       </td>
+      <td class="buttons">
+        <input type="button"  class="add button" value="+" />
+        <input type="button"  class="remove button" value="-" />
+      </td>
     </tr>
      <tr>
       <td><label for="oorspr_fun">Oorspronkelijke functie:</label></td>
@@ -167,6 +195,10 @@ echo load_plugin('jquery_ui');
           <option value="n">  </option>
           <?php echo $data->table_headers; ?>
         </select>
+      </td>
+      <td class="buttons">
+        <input type="button"  class="add button" value="+" />
+        <input type="button"  class="remove button" value="-" />
       </td>
     </tr>
      <tr>
@@ -227,7 +259,7 @@ echo load_plugin('jquery_ui');
       <td><input type=text name="uitgever"/></td>
     </tr>
      <tr>
-      <td><label for="formaat" class="label">Formaat (bijv. PDF):</label></td>
+      <td><label for="formaat" class="label">Formaat:<br/><small>(bijv. PDF)</small></label></td>
       <td><input type=text name="formaat"/></td>
     </tr>
     <tr>
@@ -243,6 +275,7 @@ echo load_plugin('jquery_ui');
 
 <script  type="text/javascript">
 
+$('#testurl').hide();
 $(function(){
 $('setup_form input[id="datum"]' ).datepicker(
   { monthNames: [ "januari", "februari",  "maart",   "april",  "mei",   "juni", "juli",   "augustus",   "september", "oktober",  "november", "december"] 
@@ -260,6 +293,7 @@ $('input[name="rd"]').on("click",function(e){
   }
 });
 $('#setup_form select[name="cbs_nr_id"]').change(function() {
+  $('#testurl').show();
   var selectedGem=$('#setup_form select[name="cbs_nr_id"]').find(":selected").text();
   $('#setup_form input[name="wikigem"]').val(selectedGem);
   $('#setup_form input[name="uitgever"]').val("[["+$('#setup_form input[name="wikigem"]').val()+"|Gemeente "+selectedGem+"]]");
@@ -275,15 +309,22 @@ $('.remove').hide();
 $('.add').on('click', function(){
   $(this).parent().children(".remove").show();
   $(this).parent().append("<div class='extra'>" 
-    + "<select> <option value='0'>spatie</option>"
-    +" <option value='1'>geen spatie</option>"
-    +" <option value='2'>spatie + cursief</option>"
-    +" <option value='3'>streepje</option>"
-    + "</select><select/></div>");
+    + "<select class='tussenvoegsel' name='"+ $(this).parent().parent().children("td").children("select").attr("name") + "_"+ $(this).parent().children(".extra").length+"_0' >"
+    +   "<option value='0'>spatie</option>"
+    +   "<option value='1'>geen spatie</option>"
+    +   "<option value='2'>spatie + cursief</option>"
+    +   "<option value='3'>streepje</option>"
+    + "</select><select name='"+ $(this).parent().parent().children("td").children("select").attr("name") + "_"+$(this).parent().children(".extra").length+"_1'>"
+    +   "<option value=''n'>  </option>"
+    +   "<?php echo $data->table_headers; ?>"
+    + "</select></div>");
 });
 
 $('.remove').on('click', function(){
- $(this).parent().children(".extra").remove();
+ $(this).parent().children(".extra:last-child").remove();
+ if ($(this).parent().children(".extra").length == 0){
+    $(this).hide();
+ }
 });
 
 </script>
