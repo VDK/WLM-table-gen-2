@@ -2,3 +2,34 @@
 a[href ^= "http"]:after {
      content: " " url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVklEQVR4Xn3PgQkAMQhDUXfqTu7kTtkpd5RA8AInfArtQ2iRXFWT2QedAfttj2FsPIOE1eCOlEuoWWjgzYaB/IkeGOrxXhqB+uA9Bfcm0lAZuh+YIeAD+cAqSz4kCMUAAAAASUVORK5CYII=);    
 }
+
+.button
+{
+ background-repeat:	no-repeat;
+	background-color:	transparent;
+	height:			30px;
+	width:			30px;
+	border:			none;
+	text-indent:		-999em;
+}
+.add{
+
+	background-image: 	url(img/plus.png);
+
+}
+
+.remove{
+
+	background-image: 	url(img/minus.png);
+}
+
+.extra{
+
+	position: relative;
+	float: left;
+	height: 30px;
+}
+.table td{
+
+	height: 30px;
+}
