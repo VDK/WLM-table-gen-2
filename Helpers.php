@@ -13,6 +13,7 @@ class Helpers extends \dependencies\BaseComponent
       'getObjnr' => 0,
       'getGoogleMapsData' => 0,
       'normalizer' => 0,
+      'array_sort' => 0,
       'nlDate' => 0
 
 
@@ -44,8 +45,11 @@ class Helpers extends \dependencies\BaseComponent
     //Loop file rows.
     $row =0;
    while (($data = fgetcsv($handler, 1000, ";")) !== FALSE) {
-        $csv[$row] = $data;    
-        $row++;
+      for ($i=0; $i <count($data); $i++){
+        $data[$i] = mb_convert_encoding( $data[$i], 'UTF-8');
+      }
+      $csv[$row] = $data;    
+      $row++;
     }
 
     //Close file handler.
@@ -122,6 +126,17 @@ class Helpers extends \dependencies\BaseComponent
     return $year;
   }
 
+public function array_sort($a, $subkey) {
+    foreach($a as $k=>$v) {
+      $b[$k] = strtolower($v[$subkey]);
+    }
+    asort($b);
+    foreach($b as $key=>$val) {
+      $c[] = $a[$key];
+    }
+    return $c;
+}
+
   public function getObjnr($i){
     $label ="WN";
     if (($i+1) <10){
@@ -163,9 +178,9 @@ class Helpers extends \dependencies\BaseComponent
       $datum = str_replace("November",     "november",     $datum);
      
       // Vervang de maand, kort
-      $datum = str_replace("Mar",          "Maa",          $datum);
       $datum = str_replace("May",          "Mei",          $datum);
       $datum = str_replace("Oct",          "Okt",          $datum);
+      $datum = str_replace("Mar",          "Maa",          $datum);
      
       // Vervang de dag, klein
       $datum = str_replace("monday",       "maandag",      $datum);
@@ -200,7 +215,7 @@ class Helpers extends \dependencies\BaseComponent
   /* geocoding functions */
    
   public function getGoogleMapsData($address){
-    $address = rawurlencode(normalizer($address));
+    $address = rawurlencode($this->helper('normalizer',$address));
     $geocode=file_get_contents('http://maps.google.com/maps/api/geocode/json?address='.$address.'&sensor=false');
     $output= json_decode($geocode);
     if ($output->status =="OK"){
