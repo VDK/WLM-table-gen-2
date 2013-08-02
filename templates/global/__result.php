@@ -3,7 +3,10 @@ $gem = $data->cbs->gemeente->get();
 $plaatsnaam = $gem;
 $previousPlace = "";
 echo load_plugin('jquery_ui');
+echo load_plugin('jquery_postpone');
+echo load_plugin('deference');
 ?>
+<title>Test</title>
 <div id="progressbar" class="ui-progressbar"></div>
 <p>
   De [[Nederlandse gemeente|gemeente]] [[<?php echo ($data->wikigem == $gem)?  $gem : $data->wikigem."|".$gem;?>]] heeft <?php echo count($data->rows->get());?> [[gemeentelijk monument|gemeentelijke monumenten]], hieronder een overzicht.
@@ -49,7 +52,7 @@ foreach ($data->rows as $key => $value  ){
 	}}</span>
 <?php
 	$previousPlace = $value['plaats']->get() ;
-	echo "\n<br/>&lt; -- --&gt;<br/>\n";
+	echo "\n<br/>&lt;!-- --&gt;<br/>\n";
 	}
 ?>
 |}<br/>
@@ -64,114 +67,80 @@ foreach ($data->rows as $key => $value  ){
 <br/>&lt;!-- Deze lijst was gegenereerd met WLM-table-gen, zie het script op http://tinyurl.com/WLM-table-gen --&gt;
 
 
-<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="50" height="50" id="flashSleep" align="middle">
-<param name="allowScriptAccess" value="sameDomain" />
-<param name="allowFullScreen" value="false" />
-<param name="movie" value="site/components/wlm_table_gen/includes/flashSleep.swf" />
-<param name="quality" value="high" /><param name="bgcolor" value="#ffffff" />	
-<embed src="site/components/wlm_table_gen/includes/flashSleep.swf" quality="high" bgcolor="#ffffff" width="50" height="50" name="flashSleep" align="middle" allowScriptAccess="sameDomain" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
-</object>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript">
 var placenames = new Array(<?php echo  $data->placenames->get(); ?>);
-var requestcount = 0;
+var falseCoords = new Array();
 var finished = 0;
 var numItems = 0;
 $(document).ready(function() {
-// if($('#flashSleep').(doesExist()) { 
-	numItems = $('.row').length + placenames.length;
+    
 
-setTimeout(geocode(), 	20);
+        numItems = $('.row').length + placenames.length;
 
+        $.serial(placenames, function(placename){
+                return $.when(getLatLong(placename).done(function(cords){
+                 //Insert the coordinates into the HTML.
+                if (cords){ 
+                	falseCoords.push(cords);
+                }
+                    
+                    //If there weren't results for the address, do nothing.
+              if(!cords) return;
+                    
+                }), $.wait(1500))
+                .always(function(){
+      			updateProgress();});
+        });
+        
+	    //When the retrieval of the cords fails...
+	  //   .fail(function(error){
+			// console.log( " Error: " + error);
+	  //   });
+    
+
+
+
+        var locations = $('.adres').map(function(){
+        return $(this).text() + ", " + $(this).attr("name");
+        });
+
+        $.serial(locations, function(location){
+                return $.when(getLatLong(location).done(function(cords){
+                 //Insert the coordinates into the HTML.
+                if (cords  ){
+                	console.log($.inArray(cords, falseCoords));
+			      $('.row').eq(finished-placenames.length).children('.lat').text(cords.lat);
+			      $('.row').eq(finished-placenames.length).children('.lon').text(cords.lon);   
+                }
+                    
+                    //If there weren't results for the address, do nothing.
+              if(!cords) return;
+                    
+                }), $.wait(1500))
+                .always(function(){
+      			updateProgress();});
+        });
+        
+	    //When the retrieval of the cords fails...
+	  //   .fail(function(error){
+			// console.log( " Error: " + error);
+	  //   });
+    
+        
 });
 function updateProgress(){
-	requestcount++; 
-	finished++;
-	var percentage = finished* 100/numItems;
-	if (percentage == 100){
-		$('#progressbar').hide();
-	}
-	else{
-		$( "#progressbar" ).progressbar({ value: Math.round(percentage) });
-	}
+    finished++;
+    var percentage = finished* 100/numItems;
+    if (percentage == 100){
+        $('#progressbar').hide();
+    }
+    else{
+        $( "#progressbar" ).progressbar({ value: Math.round(percentage) });
+    }
 
 }
-function geocode () {
-	var cutoff = finished +3;
 
-	console.log('hj');
-	//$.when(!(finished < cutoff)).then(function () {
-		// if (finished < placenames.length){
-
-		// 	$.each(placenames, function( index, value ) {
-		// 		if (index == finished){	
-		// 			getLatLong(value)
-
-		        
-		// 	        //When the retrieval of the cords is complete...
-		// 	        .done(function(cords){
-
-		// 	            // row.children('.lat').text(cords.lat);
-		// 	            // row.children('.lon').text(cords.lon);
-
-		// 	        })
-			        
-		// 	        //When the retrieval of the cords fails...
-		// 	        .fail(function(error){
-		// 	            console.log(index+ "Error: " + error);
-		// 	        })
-
-		// 	        .always( function() {
-		// 			  updateProgress();
-		// 			} );
-		//    		}
-		// 	});
-		// }
-		// else{
-			$( ".row" ).each(function( index ) {
-				if (index == finished ){//- placenames.length){
-				     //Make the address.
-			        var address = $(this).children('.adres').text() + ", " + $(this).children('.adres').attr("name");
-			        var row = $(this);
-			        //Get the cords.
-			        // triggerTimeout();
-			        getLatLong(address)
-			        
-			        //When the retrieval of the cords is complete...
-			        .done(function(cords){
-			            row.children('.lat').text(cords.lat);
-			            row.children('.lon').text(cords.lon);	
-
-			        })
-			        
-			        //When the retrieval of the cords fails...
-			        .fail(function(error){
-			            console.log(index+ " Error: " + error);
-			        })
-
-			        .always( function() {
-					  updateProgress();
-					} );
-				}
-				if (index == cutoff){
-					this.break;
-					console.log('ola');
-				}
-			});	
-		// }
-	//});	
-}
-
-function sleep(milliSeconds){
-	// call sleep method in flash
-	getFlashMovie("flashSleep").flashSleep(milliSeconds);
-}
- 
-function getFlashMovie(movieName){
-	// source: http://kb2.adobe.com/cps/156/tn_15683.html
-	var isIE = navigator.appName.indexOf("Microsoft") != -1;
-	return (isIE) ? window[movieName] : document[movieName];
-}
 function getLatLong(address) {
     
     //Create the Deferred object that handles the callbacks.
@@ -187,7 +156,10 @@ function getLatLong(address) {
         
         //The deferred fails if this request failed.
         if(status !== google.maps.GeocoderStatus.OK){
-            return D.reject(status) && false;
+           switch(status){
+               case google.maps.GeocoderStatus.ZERO_RESULTS: return D.resolve(null) && false;
+               default: return D.reject(status) && false;
+            }
         }
         
         //Create the latlon object.
