@@ -69,49 +69,52 @@ foreach ($data->rows as $key => $value  ){
 
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript">
-var placenames = new Array(<?php echo  $data->placenames->get(); ?>);
+var placenames = new Array(<?php echo  $data->placenames->get(); ?>);   // $a = array( 'Harlingen', 'Steenwijk' );  echo json_encode($a);  // ['Harlingen', 'Steenwijk']
 var falseCoords = new Array();
 var finished = 0;
+var finishedRows = 0;
 var numItems = 0;
 $(document).ready(function() {
-    
+  numItems = $('.row').length + placenames.length;
 
-        numItems = $('.row').length + placenames.length;
+  $.serial(placenames, function(placename){
+    return $.when(getLatLong(placename).done(function(cords){
+         //Insert the coordinates into the HTML.
+        if (cords){ 
+        	falseCoords.push(cords);
+        }
+            
+      //If there weren't results for the address, do nothing.
+      if(!cords) return;
+            
+        }), $.wait(1500))
+        .always(function(){
+  		    updateProgress();
+  	   });
+  }).done( geocodeRows );
+  
+// When the retrieval of the cords fails...
+//   .fail(function(error){
+// console.log( " Error: " + error);
+//   });
+});
 
-        $.serial(placenames, function(placename){
-                return $.when(getLatLong(placename).done(function(cords){
-                 //Insert the coordinates into the HTML.
-                if (cords){ 
-                	falseCoords.push(cords);
-                }
-                    
-                    //If there weren't results for the address, do nothing.
-              if(!cords) return;
-                    
-                }), $.wait(1500))
-                .always(function(){
-      			updateProgress();});
-        });
-        
-	    //When the retrieval of the cords fails...
-	  //   .fail(function(error){
-			// console.log( " Error: " + error);
-	  //   });
-    
-
-
+function geocodeRows(){
 
         var locations = $('.adres').map(function(){
-        return $(this).text() + ", " + $(this).attr("name");
+        	return $(this).text() + ", " + $(this).attr("name");
+
         });
 
         $.serial(locations, function(location){
                 return $.when(getLatLong(location).done(function(cords){
                  //Insert the coordinates into the HTML.
-                if (cords  ){
-                	console.log($.inArray(cords, falseCoords));
-			      $('.row').eq(finished-placenames.length).children('.lat').text(cords.lat);
-			      $('.row').eq(finished-placenames.length).children('.lon').text(cords.lon);   
+                if (cords && ($.inArray(cords, falseCoords) == -1)){
+      			      $('.row').eq(finishedRows).children('.lat').text(cords.lat);
+      			      $('.row').eq(finishedRows).children('.lon').text(cords.lon);   
+                }
+                else if ($.inArray(cords, falseCoords) != -1){
+                	console.log("falseCoord!");
                 }
                     
                     //If there weren't results for the address, do nothing.
@@ -119,6 +122,7 @@ $(document).ready(function() {
                     
                 }), $.wait(1500))
                 .always(function(){
+                finishedRows++;
       			updateProgress();});
         });
         
@@ -127,8 +131,7 @@ $(document).ready(function() {
 			// console.log( " Error: " + error);
 	  //   });
     
-        
-});
+}
 function updateProgress(){
     finished++;
     var percentage = finished* 100/numItems;
@@ -164,10 +167,9 @@ function getLatLong(address) {
         
         //Create the latlon object.
         var latlon = {
-            lat: results[0].geometry.location.jb,
-            lon: results[0].geometry.location.kb
+            lat: results[0].geometry.location.lat(),
+            lon: results[0].geometry.location.lng()
         };
-        
         //Resolve the deferred with it.
         D.resolve(latlon);
         
