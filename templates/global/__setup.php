@@ -317,7 +317,7 @@ $('.add').on('click', function(){
     +   "<option value='3'>streepje</option>"
     +   "<option value='4'>comma</option>"
     + "</select><select name='"+ $(this).parent().parent().children("td").children("select").attr("name") + "_"+$(this).parent().children(".extra").length+"_1'>"
-    +   "<?php echo $data->table_headers; ?>"
+    +   "<?php  echo $data->table_headers; ?>"
     + "</select></span>");
 });
 

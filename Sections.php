@@ -43,12 +43,12 @@ class Sections extends \dependencies\BaseViews
     $csv = $this->helper( 'read_csv_file', tx('Data')->files->csv->tmp_name );
     $head_options = "";
     for ($i=0; $i <count($csv[0]) ; $i++) { 
-      $head_options.="<option value='$i'>{$csv[0][$i]}</option>";
+      $head_options.="<option value='$i'>".trim($csv[0][$i])."</option>";
     }
     return array(
       'cbs_nrs' =>  $this->table('CbsNr')->order('gemeente')->execute(),
       'table_headers' => $head_options,
-      'table_data' => serialize($csv)
+      'table_data' => base64_encode(serialize($csv))
     );
 
 
@@ -56,6 +56,7 @@ class Sections extends \dependencies\BaseViews
   
   protected function result()
   {
+    ini_set('register_argc_argv', 1);
     $result = array();
     $settings = array();
     $settings_items = array();
@@ -76,7 +77,9 @@ class Sections extends \dependencies\BaseViews
           $result['bron'][$key] = $value->get();
           break;  
         case 'table_data':
-          $csv = unserialize($value->get());
+          // $csv = utf8_encode(); 
+          $csv = unserialize(base64_decode($value->get()));
+          // $csv = utf8_decode($csv);
           break;
         case 'rd':
           $rd = $value->get();
@@ -143,6 +146,7 @@ class Sections extends \dependencies\BaseViews
 
       //Break appart adres in prepreration of MIP requests
       $adres = array();
+      $adres['gemeente'] = $result['cbs']->gemeente->get();
       if (!(isset($rows[$h]['huisnummer']))){
         $adresParts = explode(" ", $rows[$h]['adres']);
         for ($k = 1; $k < count($adresParts); $k++){
@@ -178,6 +182,9 @@ class Sections extends \dependencies\BaseViews
           }
         }
       }
+      if(isset($rows[$h]['plaats'])){
+          $adres['plaats'] = $rows[$h]['plaats'];
+      }
       if (isset($rows[$h]['positionering'])){
         $adres['positionering']  = $rows[$h]['positionering'];
         $rows[$h]['adres'] =  $rows[$h]['adres']." ".$rows[$h]['positionering'];
@@ -205,40 +212,38 @@ class Sections extends \dependencies\BaseViews
           $adres['postcode'] = substr($adres['postcode'],0,-2)." ".mb_substr($adres['postcode'],-2);
         }
       }
-      //MIP request
-     // $this->table('MIP')->
-    //   $query = 'SELECT * FROM _mip 
-    // WHERE gemeente = "'.$GLOBALS['gemeente-naam'].'" 
-    // AND straat = "'.$straat.'" 
-    // AND hne = "'.$hnr.'" 
-    // AND provincie="'.$GLOBALS['provincie'].'"';
-    
-    // ($toevoegsel != "")? $query = $query.' 
-    //   AND toevoeging ="'.$toevoegsel.'";' : $query = $query.' AND toevoeging is NULL;';
-    
-    // $mipresults = mysqli_query($con,$query);
-    // if ($mipresults){
-    //   while($row2 = mysqli_fetch_array($mipresults)) {
-    //     (empty($rows['bouwjaar']))? "" : $rows['bouwjaar'] = $rows['bouwjaar'].", ";
-    //     $rows['bouwjaar'] = $rows['bouwjaar'].$row2['datering_o']."&lt;ref name=MIP/&gt";
+
+      //$adres['positionering']
+      //$adres ['straat']
+      //$adres ['hnr'] 
+      //$adres['toevoegsel'] 
+      //$adres['postcode']
+      //$adres['plaats']
+      //$adres['gemeente']
+
+      
+    //  if ($mipresults){
+    // //   while($row2 = mysqli_fetch_array($mipresults)) {
+    // //     (empty($rows['bouwjaar']))? "" : $rows['bouwjaar'] = $rows['bouwjaar'].", ";
+    // //     $rows['bouwjaar'] = $rows['bouwjaar'].$row2['datering_o']."&lt;ref name=MIP/&gt";
         
         
-    //     (empty($rows['oorspr-fun']))? "" : $rows['oorspr-fun'] = $rows['oorspr-fun'].", ";
-    //     $rows['oorspr-fun'] = $rows['oorspr-fun'].$row2['oorspr_fun'];
+    // //     (empty($rows['oorspr-fun']))? "" : $rows['oorspr-fun'] = $rows['oorspr-fun'].", ";
+    // //     $rows['oorspr-fun'] = $rows['oorspr-fun'].$row2['oorspr_fun'];
         
-    //     (empty($rows['architect']))? "" : $rows['architect'] = $rows['architect']."/ ";
-    //     $rows['architect'] = $rows['architect'].$row2['architect'];
+    // //     (empty($rows['architect']))? "" : $rows['architect'] = $rows['architect']."/ ";
+    // //     $rows['architect'] = $rows['architect'].$row2['architect'];
         
-    //     (empty($rows['object']))? $rows['object'] = substr($row2['typech_obj'],11)."" : "";
-    //     ($row2['naam'] != "")? $rows['object'] = $rows['object']." ''".$row2['naam']."''" : "";
+    // //     (empty($rows['object']))? $rows['object'] = substr($row2['typech_obj'],11)."" : "";
+    // //     ($row2['naam'] != "")? $rows['object'] = $rows['object']." ''".$row2['naam']."''" : "";
         
-    //     (empty($rows['postcode']))? $rows['postcode']  = $row2['pc'] : "";
+    // //     (empty($rows['postcode']))? $rows['postcode']  = $row2['pc'] : "";
        
-    //     (empty($rows['mip']))? "" : $rows['mip'] = $rows['mip'].", ";
-    //     $rows['mip'] = $rows['mip'].$row2['mip_sleute'];
-    //     $rows['coordinates'] = $this->helper('rd2wgs', $row2["x_coord"], $row2["y_coord"]);
-    //     $mip = true;
-    //   }
+    // //     (empty($rows['mip']))? "" : $rows['mip'] = $rows['mip'].", ";
+    // //     $rows['mip'] = $rows['mip'].$row2['mip_sleute'];
+    // //     $rows['coordinates'] = $this->helper('rd2wgs', $row2["x_coord"], $row2["y_coord"]);
+    // //     $mip = true;
+    // //   }
     //  }  
 
       //Rijksdriehoekcoördinaten
@@ -253,6 +258,9 @@ class Sections extends \dependencies\BaseViews
 
       if (empty($rows[$h]['objectnr'])){
         $rows[$h]['objectnr'] = $this->helper('getObjnr', $h);
+      }
+      else{
+        $rows[$h]['objectnr'] = str_replace(" ", "", $rows[$h]['objectnr'] );
       }
 
       //count number of items per placename
@@ -270,13 +278,13 @@ class Sections extends \dependencies\BaseViews
 
     //sort
     // $rows = $this->helper('array_sort', $rows, "adres");
-    if (!(empty($placestats))){
-      $rows = $this->helper('array_sort', $rows, "plaats");
-    //   foreach ($placestats as $key => $value) {
-    //     //center of place to be ruled out by geocoding process.
-    //   //  $placestats[$value]['coordinates'] = $this->helper('getGoogleMapsData', $value);
-    //   }
-    }
+    // if (!(empty($placestats))){
+    //   $rows = $this->helper('array_sort', $rows, "plaats");
+    // //   foreach ($placestats as $key => $value) {
+    // //     //center of place to be ruled out by geocoding process.
+    // //   //  $placestats[$value]['coordinates'] = $this->helper('getGoogleMapsData', $value);
+    // //   }
+    // }
     // else{
     // //  $placestats[$result['cbs']->gemeente->get()] =  $this->helper('getGoogleMapsData', $result['cbs']->gemeente->get());
     //   //find center of municipality

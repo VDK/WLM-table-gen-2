@@ -3,7 +3,6 @@ $gem = $data->cbs->gemeente->get();
 $plaatsnaam = $gem;
 $previousPlace = "";
 echo load_plugin('jquery_ui');
-echo load_plugin('jquery_postpone');
 echo load_plugin('deference');
 ?>
 <title>Test</title>
@@ -87,7 +86,7 @@ $(document).ready(function() {
       //If there weren't results for the address, do nothing.
       if(!cords) return;
             
-        }), $.wait(1500))
+        }), $.wait(1000))
         .always(function(){
   		    updateProgress();
   	   });
@@ -100,41 +99,40 @@ $(document).ready(function() {
 });
 
 function geocodeRows(){
+  var locations = $('.adres').map(function(){
+  	return $(this).text() + ", " + $(this).attr("name");
 
-        var locations = $('.adres').map(function(){
-        	return $(this).text() + ", " + $(this).attr("name");
+  });
 
-        });
-
-        $.serial(locations, function(location){
-                return $.when(getLatLong(location).done(function(cords){
-                 //Insert the coordinates into the HTML.
-                if (cords && ($.inArray(cords, falseCoords) == -1)){
-      			      $('.row').eq(finishedRows).children('.lat').text(cords.lat);
-      			      $('.row').eq(finishedRows).children('.lon').text(cords.lon);   
-                }
-                else if ($.inArray(cords, falseCoords) != -1){
-                	console.log("falseCoord!");
-                }
-                    
-                    //If there weren't results for the address, do nothing.
-              if(!cords) return;
-                    
-                }), $.wait(1500))
-                .always(function(){
-                finishedRows++;
-      			updateProgress();});
-        });
-        
-	    //When the retrieval of the cords fails...
-	  //   .fail(function(error){
-			// console.log( " Error: " + error);
-	  //   });
+  $.serial(locations, function(location){
+          return $.when(getLatLong(location).done(function(cords){
+           //Insert the coordinates into the HTML.
+          if (cords && ($.inArray(cords, falseCoords) == -1)){
+			      $('.row').eq(finishedRows).children('.lat').text(cords.lat);
+			      $('.row').eq(finishedRows).children('.lon').text(cords.lon);   
+          }
+          else if ($.inArray(cords, falseCoords) != -1){
+          	console.log("falseCoord!");
+          }
+              
+              //If there weren't results for the address, do nothing.
+        if(!cords) return;
+              
+          }), $.wait(4000))
+          .always(function(){
+          finishedRows++;
+  			 updateProgress();});
+       });
+  
+//When the retrieval of the cords fails...
+//   .fail(function(error){
+// console.log( " Error: " + error);
+//   });
     
 }
 function updateProgress(){
     finished++;
-    var percentage = finished* 100/numItems;
+    var percentage = finished * 100/numItems;
     if (percentage == 100){
         $('#progressbar').hide();
     }
@@ -161,7 +159,7 @@ function getLatLong(address) {
         if(status !== google.maps.GeocoderStatus.OK){
            switch(status){
                case google.maps.GeocoderStatus.ZERO_RESULTS: return D.resolve(null) && false;
-               default: return D.reject(status) && false;
+               default: console.log(status); return D.reject(status) && false;
             }
         }
         

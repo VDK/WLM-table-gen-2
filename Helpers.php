@@ -14,6 +14,7 @@ class Helpers extends \dependencies\BaseComponent
       'getGoogleMapsData' => 0,
       'normalizer' => 0,
       'array_sort' => 0,
+      'getMIPdata' => 0,
       'nlDate' => 0
 
 
@@ -36,6 +37,22 @@ class Helpers extends \dependencies\BaseComponent
     
   */
 
+  public function getMIPdata($address = array()){
+     // $this->table('MIP')->
+    //   $query = 'SELECT * FROM _mip 
+    // WHERE gemeente = "'.$GLOBALS['gemeente-naam'].'" 
+    // AND straat = "'.$straat.'" 
+    // AND hne = "'.$hnr.'" 
+    // AND provincie="'.$GLOBALS['provincie'].'"';
+    
+    // ($toevoegsel != "")? $query = $query.' 
+    //   AND toevoeging ="'.$toevoegsel.'";' : $query = $query.' AND toevoeging is NULL;';
+    
+    // $mipresults = mysqli_query($con,$query);
+    // 
+
+  }
+
   
   public function read_csv_file($filename)  {
     iconv_set_encoding("internal_encoding", "UTF-8");
@@ -46,13 +63,14 @@ class Helpers extends \dependencies\BaseComponent
     $row =0;
    while (($data = fgetcsv($handler, 1000, ";")) !== FALSE) {
       for ($i=0; $i <count($data); $i++){
+        
         $data[$i] = mb_convert_encoding( $data[$i], 'UTF-8');
       }
       $csv[$row] = $data;    
       $row++;
     }
 
-    //Close file handler.
+   //  //Close file handler.
     fclose($handler);
     return $csv;
 
