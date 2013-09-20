@@ -10,7 +10,6 @@ class Sections extends \dependencies\BaseViews
       'result' => 0
     );
 
-
   /*
     
     # The Sections.php file
@@ -33,14 +32,14 @@ class Sections extends \dependencies\BaseViews
   */
 
   protected function upload(){
-    
+    return $this->helper('getFooter');
   }
   
   protected function setup()
   {
     
     //Read CSV file.
-    $csv = $this->helper( 'read_csv_file', tx('Data')->files->csv->tmp_name );
+   $csv = $this->helper( 'read_csv_file', tx('Data')->files->csv->tmp_name ,tx('Data')->post['delimiter']->get() );
     $head_options = "";
     for ($i=0; $i <count($csv[0]) ; $i++) { 
       $head_options.="<option value='$i'>".trim($csv[0][$i])."</option>";
@@ -48,7 +47,8 @@ class Sections extends \dependencies\BaseViews
     return array(
       'cbs_nrs' =>  $this->table('CbsNr')->order('gemeente')->execute(),
       'table_headers' => $head_options,
-      'table_data' => base64_encode(serialize($csv))
+      'table_data' => base64_encode(serialize($csv)),
+      'footer' =>$this->helper('getFooter')
     );
 
 
@@ -60,6 +60,7 @@ class Sections extends \dependencies\BaseViews
     $result = array();
     $settings = array();
     $settings_items = array();
+    $current_item = "";
     //Get all POST data
     foreach ( tx('Data')->post as $key => $value) {
       switch ($key) {
@@ -83,7 +84,10 @@ class Sections extends \dependencies\BaseViews
           break;
         case 'rd':
           $rd = $value->get();
-          break;  
+          break;
+        case 'latlong':
+          $latlong =  $value->get();
+          break;
         default:
           $key = explode("_", $key);
           for ($i =0; $i<count($key); $i=$i+2){
@@ -109,43 +113,58 @@ class Sections extends \dependencies\BaseViews
     $placestats = array();
     for ($h =0; $h<(count($csv)-1); $h++){
       for ($i = 0; $i < count($settings_items); $i++){
-        $rows[$h][$settings_items[$i]] = $csv[($h+1)][$settings[$settings_items[$i]]];
+        if (isset($csv[($h+1)][$settings[$settings_items[$i]]])){
+          $rows[$h][$settings_items[$i]] = $csv[($h+1)][$settings[$settings_items[$i]]];
+        }
+        else{
+           $rows[$h][$settings_items[$i]] = "";
+        }
         //merge collumns
         if (isset($settings[$settings_items[$i]."A"])){
           for ($j=0; $j < count($settings[$settings_items[$i]."A"]); $j++){
             for ($k = 0; $k < (count($settings[$settings_items[$i]."A"][$j])-1); $k=$k+2){
-              switch ($settings[$settings_items[$i]."A"][$j][$k]) {
-                 case '0':
-                   # spatie
-                   $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]." "; 
-                   break;
-                case '1':
-                  # geen spatie
-                  break;
-                case '2':
-                    # spatie + cursief
-                   $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]." ''";
-                    break;  
-                 case '3':
-                   # streepje
-                   $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]."-";
-                   break;
-                 case '4':
-                   # comma
-                   $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]].", ";
-                   break; 
-               }
-               $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]].$csv[($h+1)][$settings[$settings_items[$i]."A"][$j][($k+1)]];
-               if ($settings[$settings_items[$i]."A"][$j][$k] == '2'){
-                  $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]."''";
-               }
+              if ($csv[($h+1)][$settings[$settings_items[$i]."A"][$j][($k+1)]]!=""){
+                switch ($settings[$settings_items[$i]."A"][$j][$k]) {
+                   case '0':
+                     # spatie
+                     $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]." "; 
+                     break;
+                  case '1':
+                    # geen spatie
+                    break;
+                  case '2':
+                      # spatie + cursief
+                     $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]." ''";
+                      break;  
+                   case '3':
+                     # streepje
+                     $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]."-";
+                     break;
+                   case '4':
+                     # comma
+                     $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]].", ";
+                     break;
+                   case '5':
+                     # in ... stijl
+                     $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]." in ";
+                     break;
+                 }
+                 $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]].$csv[($h+1)][$settings[$settings_items[$i]."A"][$j][($k+1)]];
+                 if ($settings[$settings_items[$i]."A"][$j][$k] == '2'){
+                    $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]."''";
+                 }
+                 else if ($settings[$settings_items[$i]."A"][$j][$k] == '5'){
+                    $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]." stijl";
+                 }
+              }
             }
           }
         }
       }
 
-      //Break appart adres in prepreration of MIP requests
+      Break appart adres in prepreration of MIP requests
       $adres = array();
+      $collect_street = "";
       $adres['gemeente'] = $result['cbs']->gemeente->get();
       if (!(isset($rows[$h]['huisnummer']))){
         $adresParts = explode(" ", $rows[$h]['adres']);
@@ -250,6 +269,10 @@ class Sections extends \dependencies\BaseViews
       if ($rd == "true"){
         $rows[$h]['coordinates'] = $this->helper('rd2wgs', $rows[$h]['xcoord'], $rows[$h]['ycoord']  );
       }
+      if($latlong == "true"){
+        $rows[$h]['coordinates']['lat']  = $rows[$h]['lat'];
+        $rows[$h]['coordinates']['long'] = $rows[$h]['long'];
+      }
 
       //insert {{sorteer}} template
       if (isset($rows[$h]['bouwjaar'])){
@@ -264,7 +287,7 @@ class Sections extends \dependencies\BaseViews
       }
 
       //count number of items per placename
-      if(isset($rows[$h]['plaats'])){
+      if(isset($rows[$h]['plaats']) && $rows[$h]['plaats'] != "" ){
         $rows[$h]['plaats'] = trim($rows[$h]['plaats']);
         if (!(empty($placestats[$rows[$h]['plaats']]['count']))){ 
           $placestats[$rows[$h]['plaats']]['count']++;

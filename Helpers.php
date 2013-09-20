@@ -5,6 +5,7 @@ class Helpers extends \dependencies\BaseComponent
   
   protected
     $permissions = array(
+      'getFooter' => 0,
       'read_csv_file' => 0,
       'getProvinceISO' => 0,
       'getProvinceCategoryName' => 0,
@@ -52,19 +53,22 @@ class Helpers extends \dependencies\BaseComponent
     // 
 
   }
-
+  public function getFooter(){
+    return '<div id="footer">Made with the power of stroopwafels by <a href="http://www.veradekok.nl" target="_blanc">Vera de Kok</a><br/>with help from <a href="https://github.com/Avaq" target="_blanc">Avaq</a> and <a href="http://www.bartroorda.nl" target="_blanc">Bart Roorda</a><br/></div>';
+  }
   
-  public function read_csv_file($filename)  {
+  public function read_csv_file($filename, $delimiter)  {
     iconv_set_encoding("internal_encoding", "UTF-8");
     //Open file.
     $csv =  array();
     $handler = fopen($filename, "r");
     //Loop file rows.
     $row =0;
-   while (($data = fgetcsv($handler, 1000, ";")) !== FALSE) {
+   while (($data = fgetcsv($handler, 1000, $delimiter)) !== FALSE) {
       for ($i=0; $i <count($data); $i++){
         
         $data[$i] = mb_convert_encoding( $data[$i], 'UTF-8');
+        $data[$i] = trim($data[$i]);
       }
       $csv[$row] = $data;    
       $row++;
@@ -123,24 +127,24 @@ class Helpers extends \dependencies\BaseComponent
 
 
     public function sortYearWiki ($year){
-    if ($year != ""){
-      $yearparts = explode (" ", $year);
-      // look for 4 digit years
-      if (is_numeric(mb_substr($yearparts[0], 0,4))){
-        return $year;
-      }
-      for ($i = 1; $i < count($yearparts); $i++){
-        if (is_numeric(mb_substr($yearparts[$i],0,4))){
-          return "{{Sorteer|".mb_substr($yearparts[$i],0,4)."|".$year."}}";
+      if ($year != ""){
+        $yearparts = explode (" ", $year);
+        // look for 4 digit years
+        if (is_numeric(mb_substr($yearparts[0], 0,4))){
+          return $year;
+        }
+        for ($i = 1; $i < count($yearparts); $i++){
+          if (is_numeric(mb_substr($yearparts[$i],0,4))){
+            return "{{Sorteer|".mb_substr($yearparts[$i],0,4)."|".$year."}}";
+          }
+        }
+        //look for 2 digit century names
+        for ($i = 0; $i < count($yearparts); $i++){
+          if (is_numeric(mb_substr($yearparts[$i],0,2))){
+            return "{{Sorteer|".(mb_substr($yearparts[$i],0,2)-1)."00|".$year."}}";
+          }
         }
       }
-      //look for 2 digit century names
-      for ($i = 0; $i < count($yearparts); $i++){
-        if (is_numeric(mb_substr($yearparts[$i],0,2))){
-          return "{{Sorteer|".(mb_substr($yearparts[$i],0,2)-1)."00|".$year."}}";
-        }
-      }
-    }
     return $year;
   }
 

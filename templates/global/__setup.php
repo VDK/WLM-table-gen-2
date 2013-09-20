@@ -1,6 +1,8 @@
 <?php
 echo load_plugin('jquery_ui');
 ?>
+<div id="wrapper">
+
 <form method="POST" id="setup_form" action="<?php echo url('s=result'); ?>">
   <h2>Gemeente</h2>
   <table>
@@ -207,6 +209,58 @@ echo load_plugin('jquery_ui');
           <?php echo $data->table_headers; ?>
         </select>
       </td>
+       </tr>
+      <tr>
+      <td><label for="commonscat">Commonscat:</label></td>
+      <td>
+        <select name="commonscat">
+          <option value="n">  </option>
+          <?php echo $data->table_headers; ?>
+        </select>
+      </td>
+    </tr>
+    </tr>
+      <tr>
+      <td><label for="img">Afbeelding:</label></td>
+      <td>
+        <select name="img">
+          <option value="n">  </option>
+          <?php echo $data->table_headers; ?>
+        </select>
+      </td>
+    </tr>
+  </table>
+  <h3>Geooördinaten</h3>
+<table>
+  <tr>
+    <td >Zijn er geocoördinaten aangeleverd?</td>
+    <td align="right">
+      <input type="radio" name="latlong" id="ja" value="true">
+      <label for="ja">ja</label>
+      <input type="radio" name="latlong" id="nee" value="false" checked>
+      <label for="nee">nee</label>
+    </td>
+  </tr>
+  <tr>
+      <td><label for="lat">Latitudinale coördinaten:</label></td>
+      <td> 
+        <select name="lat" disabled="disabled">
+          <?php
+          echo $data->table_headers;
+          ?>
+        </select>  
+      </select>
+    </td>
+    </tr>
+     <tr>
+      <td><label for="long">Longditudinale coördinaten:</label></td>
+      <td>
+       <select name="long" disabled="disabled">
+          <?php
+          echo $data->table_headers;
+          ?>
+        </select>  
+      </td>
     </tr>
   </table>
   <h3>Rijksdriehoekcoördinaten</h3>
@@ -268,10 +322,12 @@ echo load_plugin('jquery_ui');
   </table>  
   <p>
     <input type="hidden" value='<?php echo $data->table_data;?>' name="table_data" />
-    <input type=submit value="Go Go Go!"/>
+    <input type=submit class="bluebutton" value="Go Go Go!"/>
   </p>
 </form>
+<?php echo $data->footer;?>
 
+</div>
 <script  type="text/javascript">
 
 $('#testurl').hide();
@@ -282,6 +338,18 @@ $('#datum' ).datepicker(
   , dateFormat: 'd MM yy' }).val();
 
 });
+$('input[name="latlong"]').on("click",function(e){
+  console.log($(e.target).val());
+  if($(e.target).val() == "false"){
+    $('select[name="lat"]').attr("disabled", "disabled");
+    $('select[name="long"]').attr("disabled", "disabled");
+  }
+  else{
+    $('select[name="lat"]').removeAttr("disabled");
+    $('select[name="long"]').removeAttr("disabled");
+  }
+});
+
 $('input[name="rd"]').on("click",function(e){
   console.log($(e.target).val());
   if($(e.target).val() == "false"){
@@ -316,6 +384,7 @@ $('.add').on('click', function(){
     +   "<option value='2'>spatie + cursief</option>"
     +   "<option value='3'>streepje</option>"
     +   "<option value='4'>comma</option>"
+    +   "<option value='5'>In ... stijl</option>"
     + "</select><select name='"+ $(this).parent().parent().children("td").children("select").attr("name") + "_"+$(this).parent().children(".extra").length+"_1'>"
     +   "<?php  echo $data->table_headers; ?>"
     + "</select></span>");

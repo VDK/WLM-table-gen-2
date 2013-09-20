@@ -26,4 +26,119 @@ a[href ^= "http"]:after {
 }
 
 
-  
+*{
+   padding:0;
+}
+
+
+
+#wrapper{
+   width:960px;
+   height: 100%;
+   margin:0 auto;
+   text-align:left;
+   background-color: white;
+   padding: 20px;
+   -moz-box-shadow: 0 0 5px 5px #888;
+   -webkit-box-shadow: 0 0 5px 5px#888;
+   box-shadow: 0 0 5px 5px #888;
+}  
+
+body{
+	background-color: #DCDCDC;
+	font-family: Helvetica, Arial, Sans-Serif;
+}
+
+input.file {
+	position: relative;
+	text-align: right;
+	-moz-opacity:0 ;
+	filter:alpha(opacity: 0);
+	opacity: 0;
+	z-index: 2;
+	width: 95px;
+	height: 50px;
+	cursor: pointer;
+	margin-top: -50px;
+}
+#delimiter{
+	width: 23px;
+}
+#uploadbutton{
+	margin-top: -600px;
+}
+.file-wrapper .button, 
+.bluebutton {
+	cursor: pointer;
+	-moz-box-shadow:inset 0px 1px 0px 0px #97c4fe;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #97c4fe;
+	box-shadow:inset 0px 1px 0px 0px #97c4fe;
+	background-color:#3d94f6;
+	-webkit-border-top-left-radius:0px;
+	-moz-border-radius-topleft:0px;
+	border-top-left-radius:0px;
+	-webkit-border-top-right-radius:0px;
+	-moz-border-radius-topright:0px;
+	border-top-right-radius:0px;
+	-webkit-border-bottom-right-radius:0px;
+	-moz-border-radius-bottomright:0px;
+	border-bottom-right-radius:0px;
+	-webkit-border-bottom-left-radius:0px;
+	-moz-border-radius-bottomleft:0px;
+	border-bottom-left-radius:0px;
+	text-indent:0;
+	border:1px solid #337fed;
+	display:inline-block;
+	color:#ffffff;
+	font-size:15px;
+	font-weight:bold;
+	font-style:normal;
+	height:40px;
+	line-height:40px;
+	width:100px;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0px #1570cd;
+}.bluebutton:hover {
+	background-color:#1e62d0;
+}.bluebutton:active {
+	position:relative;
+	top:1px;
+}
+
+.file-wrapper {
+  cursor: pointer;
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+}
+.file-wrapper input {
+  cursor: pointer;
+  font-size: 100px;
+  height: 100%;
+  filter: alpha(opacity=1);
+  -moz-opacity: 0.01;
+  opacity: 0.01;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+#footer {
+ width:100%;
+ bottom:0;
+ color:#7896a5;
+ clear: both;
+ position: relative;
+ z-index: 10;
+ height: 50px;
+ text-align: center;
+ font-size: 80%;
+}
+#footer a:link{
+	color: #808080;
+}
+#footer a:active,
+#footer a:hover,
+#footer a:visited {
+ color: #708090;
+}
