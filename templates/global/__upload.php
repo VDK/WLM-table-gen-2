@@ -1,5 +1,6 @@
 <div id="wrapper">
-<h2>Bonjour!</h2>
+
+<h2>Bon<?php echo (date('H') >= 18 ? 'soir' : 'jour'); ?>!</h2>
 
 <p>
   Hoi! Welkom bij deze supercoole generator van Wiki Loves Monuments tabellen.
