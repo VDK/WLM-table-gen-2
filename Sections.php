@@ -162,7 +162,7 @@ class Sections extends \dependencies\BaseViews
         }
       }
 
-      Break appart adres in prepreration of MIP requests
+      // Break appart adres in prepreration of MIP requests
       $adres = array();
       $collect_street = "";
       $adres['gemeente'] = $result['cbs']->gemeente->get();
@@ -316,8 +316,9 @@ class Sections extends \dependencies\BaseViews
     $result['placestats']         = $placestats;
     $result['rows']               = $rows;
     $result['bron']['accessDate'] = $this->helper('nlDate', date('j F Y'));
-    $result['provinceCat']        = $this->helper('getProvinceCategoryName', $result['cbs']->provincie);
-    $result['ISO']                = $this->helper('getProvinceISO', $result['cbs']->provincie);
+    $result['provinceCat']        = $this->helper('getProvinceCategoryName', $result['cbs']->provincie->get());
+    $result['gemeenteCat']        = $this->helper('getGemeenteCategoryName', $result['cbs']->bouwwerk_in_cat->get(), $result['cbs']->gemeente->get());
+    $result['ISO']                = $this->helper('getProvinceISO', $result['cbs']->provincie->get());
     return $result;
 
   }

@@ -64,10 +64,10 @@ foreach ($data->rows as $key => $value  ){
 {{Appendix|2=*{{Citeer web|url=<?php echo $data->bron->url;?> |titel=<?php echo $data->bron->titel;?>  |uitgever=<?php echo $data->bron->uitgever;?> |formaat=<?php echo $data->bron->formaat;?>  |datum=<?php echo $data->bron->datum;?>  |bezochtdatum=<?php echo $data->bron->accessDate;?> }}<br/>
 ----<br/>
 {{references}}}}<br/>
-[[Categorie:<?php echo $gem;?>]]<br/>
+[[Categorie:<?php echo $data->gemeenteCat;?>]]<br/>
 [[Categorie:Lijsten van gemeentelijke monumenten in <?php echo $data->provinceCat."|".$gem;?>]]<br/>
 [[Categorie:Lijsten van gemeentelijke monumenten naar gemeente|<?php echo $gem; ?>]]
-<br/>&lt;!-- Deze lijst was gegenereerd met WLM-table-gen, zie het script op http://tinyurl.com/WLM-table-gen --&gt;
+<br/>&lt;!-- Deze lijst was gegenereerd met WLM-table-gen, zie de webapplicatie op http://wlm.veradekok.nl/ --&gt;
 
 
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>

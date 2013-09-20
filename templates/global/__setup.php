@@ -322,7 +322,12 @@ echo load_plugin('jquery_ui');
   </table>  
   <p>
     <input type="hidden" value='<?php echo $data->table_data;?>' name="table_data" />
-    <input type=submit class="bluebutton" value="Go Go Go!"/>
+    <div>
+      <div style="display:inline-block; position:relative;" id='tempsubmit' class="blockSubmit">
+        <input type=submit id='submit' class="bluebutton" value="Go Go Go!" disabled="disabled" />
+        <div style="position:absolute; left:0; right:0; top:0; bottom:0;" class="blockSubmit"></div>
+      </div>​
+    </div>
   </p>
 </form>
 <?php echo $data->footer;?>
@@ -338,8 +343,12 @@ $('#datum' ).datepicker(
   , dateFormat: 'd MM yy' }).val();
 
 });
+$('#tempsubmit').on("click",function(e){
+  if ($('#submit').is(':disabled')){
+     alert('Vergeet niet een gemeente te selecteren');
+  }
+});
 $('input[name="latlong"]').on("click",function(e){
-  console.log($(e.target).val());
   if($(e.target).val() == "false"){
     $('select[name="lat"]').attr("disabled", "disabled");
     $('select[name="long"]').attr("disabled", "disabled");
@@ -351,7 +360,6 @@ $('input[name="latlong"]').on("click",function(e){
 });
 
 $('input[name="rd"]').on("click",function(e){
-  console.log($(e.target).val());
   if($(e.target).val() == "false"){
     $('select[name="xcoord"]').attr("disabled", "disabled");
     $('select[name="ycoord"]').attr("disabled", "disabled");
@@ -363,6 +371,8 @@ $('input[name="rd"]').on("click",function(e){
 });
 $('#setup_form select[name="cbs_nr_id"]').change(function() {
   $('#testurl').show();
+  $('#submit').removeAttr('disabled');
+  $('.blockSubmit').removeAttr('style');
   var selectedGem=$('#setup_form select[name="cbs_nr_id"]').find(":selected").text();
   $('#setup_form input[name="wikigem"]').val(selectedGem);
   $('#setup_form input[name="uitgever"]').val("[["+$('#setup_form input[name="wikigem"]').val()+"|Gemeente "+selectedGem+"]]");

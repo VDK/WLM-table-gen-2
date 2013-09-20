@@ -8,6 +8,7 @@ class Helpers extends \dependencies\BaseComponent
       'getFooter' => 0,
       'read_csv_file' => 0,
       'getProvinceISO' => 0,
+      'getGemeenteCategoryName' => 0,
       'getProvinceCategoryName' => 0,
       'rd2wgs' =>0,
       'sortYearWiki' => 0,
@@ -80,7 +81,15 @@ class Helpers extends \dependencies\BaseComponent
 
   }
 
+  public function getGemeenteCategoryName($categorySet, $gemName){
+    if ($categorySet == 1){
+      return "Bouwwerk in ".$gemName;
+    }
+    else{
+      return $gemName;
+    }
 
+  }
   public function getProvinceISO($province = ""){
     $province = strtolower($province);
     switch ($province){
