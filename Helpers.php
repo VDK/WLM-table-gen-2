@@ -66,13 +66,19 @@ class Helpers extends \dependencies\BaseComponent
     //Loop file rows.
     $row =0;
    while (($data = fgetcsv($handler, 1000, $delimiter)) !== FALSE) {
+      $j = 0;
       for ($i=0; $i <count($data); $i++){
         
         $data[$i] = mb_convert_encoding( $data[$i], 'UTF-8');
         $data[$i] = trim($data[$i]);
+        if($data[$i] == ""){
+          $j++;
+        }
       }
-      $csv[$row] = $data;    
-      $row++;
+      if ($j != count($data)){
+        $csv[$row] = $data;    
+        $row++;
+      }
     }
 
    //  //Close file handler.
