@@ -71,8 +71,9 @@ class Helpers extends \dependencies\BaseComponent
         
         $data[$i] = mb_convert_encoding( $data[$i], 'UTF-8');
         $data[$i] = trim($data[$i]);
-        $data[$i] = str_replace("<", "&lt;", $data[$i]);
-        $data[$i] = str_replace(">", "&gt;", $data[$i]);
+        $data[$i] = str_replace("<", "&lt;",  $data[$i]);
+        $data[$i] = str_replace(">", "&gt;",  $data[$i]);
+        $data[$i] = str_replace("'", "&apos;",$data[$i]);
         if($data[$i] == ""){
           $j++;
         }
