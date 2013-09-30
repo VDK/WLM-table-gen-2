@@ -74,6 +74,7 @@ class Helpers extends \dependencies\BaseComponent
         $data[$i] = str_replace("<", "&lt;",  $data[$i]);
         $data[$i] = str_replace(">", "&gt;",  $data[$i]);
         $data[$i] = str_replace("'", "&apos;",$data[$i]);
+        $data[$i] = str_replace("–", "-",     $data[$i]);
         if($data[$i] == ""){
           $j++;
         }
