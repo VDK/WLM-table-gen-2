@@ -53,6 +53,7 @@ class Sections extends \dependencies\BaseViews
 
 
   }
+ 
   
   protected function result()
   {
@@ -89,9 +90,9 @@ class Sections extends \dependencies\BaseViews
           $latlong =  $value->get();
           break;
         default:
-          $key = explode("_", $key);
-          for ($i =0; $i<count($key); $i=$i+2){
-            if ($value->get() != "n" && $value->get() != "" ){
+          if ($value->get() != "n" && $value->get() != "" ){
+            $key = explode("_", $key);
+            for ($i =0; $i<count($key); $i=$i+2){
               if ($i == 0 && count($key) == 1){
                 $settings[$key[$i]] = trim($value->get());
                 $current_item = $key[$i];
@@ -112,57 +113,47 @@ class Sections extends \dependencies\BaseViews
     $placenames = array();
     $placestats = array();
     for ($h =0; $h<(count($csv)-1); $h++){
+      $rows[$h]['bouwjaar']  = "";
+      $rows[$h]['oorspr-fun']= "";
+      $rows[$h]['architect'] = "";
+      $rows[$h]['object']    = "";
+      $rows[$h]['adres']     = "";
+      $rows[$h]['postcode']  = "";
+      $rows[$h]['mip']       = "";
+      $rows[$h]['xcoord']    = "";
+      $rows[$h]['ycoord']    = "";
+      $rows[$h]['mip']       = "";
+      // $rows[$h]['coordinates']['lat']  = "";
+      // $rows[$h]['coordinates']['long'] = "";
       for ($i = 0; $i < count($settings_items); $i++){
         if (isset($csv[($h+1)][$settings[$settings_items[$i]]])){
           $rows[$h][$settings_items[$i]] = $csv[($h+1)][$settings[$settings_items[$i]]];
-        }
-        else{
-           $rows[$h][$settings_items[$i]] = "";
         }
         //merge collumns
         if (isset($settings[$settings_items[$i]."A"])){
           for ($j=0; $j < count($settings[$settings_items[$i]."A"]); $j++){
             for ($k = 0; $k < (count($settings[$settings_items[$i]."A"][$j])-1); $k=$k+2){
-              if ($csv[($h+1)][$settings[$settings_items[$i]."A"][$j][($k+1)]]!=""){
-                switch ($settings[$settings_items[$i]."A"][$j][$k]) {
-                   case '0':
-                     # spatie
-                     $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]." "; 
-                     break;
-                  case '1':
-                    # geen spatie
-                    break;
-                  case '2':
-                      # spatie + cursief
-                     $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]." ''";
-                      break;  
-                   case '3':
-                     # streepje
-                     $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]."-";
-                     break;
-                   case '4':
-                     # comma
-                     $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]].", ";
-                     break;
-                   case '5':
-                     # in ... stijl
-                     $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]." in ";
-                     break;
-                 }
-                 $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]].$csv[($h+1)][$settings[$settings_items[$i]."A"][$j][($k+1)]];
-                 if ($settings[$settings_items[$i]."A"][$j][$k] == '2'){
-                    $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]."''";
-                 }
-                 else if ($settings[$settings_items[$i]."A"][$j][$k] == '5'){
-                    $rows[$h][$settings_items[$i]] = $rows[$h][$settings_items[$i]]." stijl";
-                 }
-              }
+              $rows[$h][$settings_items[$i]] = $this->helper('mergeItems', 
+                $rows[$h][$settings_items[$i]], 
+                $csv[($h+1)][$settings[$settings_items[$i]."A"][$j][($k+1)]],
+                $settings[$settings_items[$i]."A"][$j][$k] );    
             }
           }
         }
       }
 
       // Break appart adres in prepreration of MIP requests
+
+      //Rsults into:
+
+      //$adres['positionering']
+      //$adres['straat']
+      //$adres['hnr'] 
+      //$adres['toevoegsel'] 
+      //$adres['postcode']
+      //$adres['plaats']
+      //$adres['gemeente']
+
       $adres = array();
       $collect_street = "";
       $adres['gemeente'] = $result['cbs']->gemeente->get();
@@ -230,43 +221,37 @@ class Sections extends \dependencies\BaseViews
         if (strlen($adres['postcode'] == 6)){
           $adres['postcode'] = substr($adres['postcode'],0,-2)." ".mb_substr($adres['postcode'],-2);
         }
+
+        $rows[$h]['postcode'] = str_replace(".", "",$rows[$h]['postcode']);
       }
 
-      //$adres['positionering']
-      //$adres ['straat']
-      //$adres ['hnr'] 
-      //$adres['toevoegsel'] 
-      //$adres['postcode']
-      //$adres['plaats']
-      //$adres['gemeente']
+      //MIP data handling
+     //  $mipresults = $this->helper('getMIPdata', $adres);
 
+     //  //These settings need to come from the GUI
+     //  $mipSetting['datering_o']  = '4';
+     //  $mipSetting['oorspr_fun']  = '4';
+     //  $mipSetting['architect']   = '4';
+     //  $mipSetting['typech_obj']  = '4';
+     //  $mipSetting['naam']        = '2';
+     //  $mipSetting['pc']          = '4';
+     //  $mipSetting['mip_sleutel'] = '4';
       
-    //  if ($mipresults){
-    // //   while($row2 = mysqli_fetch_array($mipresults)) {
-    // //     (empty($rows['bouwjaar']))? "" : $rows['bouwjaar'] = $rows['bouwjaar'].", ";
-    // //     $rows['bouwjaar'] = $rows['bouwjaar'].$row2['datering_o']."&lt;ref name=MIP/&gt";
-        
-        
-    // //     (empty($rows['oorspr-fun']))? "" : $rows['oorspr-fun'] = $rows['oorspr-fun'].", ";
-    // //     $rows['oorspr-fun'] = $rows['oorspr-fun'].$row2['oorspr_fun'];
-        
-    // //     (empty($rows['architect']))? "" : $rows['architect'] = $rows['architect']."/ ";
-    // //     $rows['architect'] = $rows['architect'].$row2['architect'];
-        
-    // //     (empty($rows['object']))? $rows['object'] = substr($row2['typech_obj'],11)."" : "";
-    // //     ($row2['naam'] != "")? $rows['object'] = $rows['object']." ''".$row2['naam']."''" : "";
-        
-    // //     (empty($rows['postcode']))? $rows['postcode']  = $row2['pc'] : "";
-       
-    // //     (empty($rows['mip']))? "" : $rows['mip'] = $rows['mip'].", ";
-    // //     $rows['mip'] = $rows['mip'].$row2['mip_sleute'];
-    // //     $rows['coordinates'] = $this->helper('rd2wgs', $row2["x_coord"], $row2["y_coord"]);
-    // //     $mip = true;
-    // //   }
-    //  }  
+     // foreach($mipresults as $mipresult){
+     //   $rows[$h]['bouwjaar']  = $this->helper('mergeItems', $rows[$h]['bouwjaar'],  $mipresult['datering_o'],  $mipSetting['datering_o'] );
+     //   $rows[$h]['oorspr-fun']= $this->helper('mergeItems', $rows[$h]['oorspr-fun'],$mipresult['oorspr_fun'],  $mipSetting['oorspr_fun'] );
+     //   $rows[$h]['architect'] = $this->helper('mergeItems', $rows[$h]['architect'], $mipresult['architect'],   $mipSetting['architect'] );
+     //   $rows[$h]['object']    = $this->helper('mergeItems', $rows[$h]['object'],    $mipresult['typech_obj'],  $mipSetting['typech_obj'] );
+     //   $rows[$h]['object']    = $this->helper('mergeItems', $rows[$h]['object'],    $mipresult['naam'],        $mipSetting['naam']);
+     //   $rows[$h]['postcode']  = $this->helper('mergeItems', $rows[$h]['postcode'],  $mipresult['pc'],          $mipSetting['pc'] );
+     //   $rows[$h]['mip']       = $this->helper('mergeItems', $rows[$h]['mip'],       $mipresult['mip_sleutel'], $mipSetting['mip_sleutel'] );
+
+     //    $rows[$h]['coordinates'] = $this->helper('rd2wgs', $mipresult["x_coord"], $mipresult["y_coord"]);
+     //    // $mip = true;
+     // }  
 
       //Rijksdriehoekcoördinaten
-      if ($rd == "true"){
+      if ($rd == "true" && !(empty($rows[$h]['xcoord'])) && !(empty($rows[$h]['ycoord']))){
         $rows[$h]['coordinates'] = $this->helper('rd2wgs', $rows[$h]['xcoord'], $rows[$h]['ycoord']  );
       }
       if($latlong == "true"){
@@ -277,6 +262,7 @@ class Sections extends \dependencies\BaseViews
       //insert {{sorteer}} template
       if (isset($rows[$h]['bouwjaar'])){
         $rows[$h]['bouwjaar'] = $this->helper('sortYearWiki', $rows[$h]['bouwjaar'] );
+        $rows[$h]['bouwjaar'] = str_replace(".", "",$rows[$h]['bouwjaar']);
       }
 
       if (empty($rows[$h]['objectnr'])){
@@ -298,6 +284,7 @@ class Sections extends \dependencies\BaseViews
         }
       }
     }
+    
 
     //sort
     // $rows = $this->helper('array_sort', $rows, "adres");

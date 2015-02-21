@@ -17,6 +17,7 @@ class Helpers extends \dependencies\BaseComponent
       'normalizer' => 0,
       'array_sort' => 0,
       'getMIPdata' => 0,
+      'mergeItems' =>0,
       'nlDate' => 0
 
 
@@ -40,6 +41,15 @@ class Helpers extends \dependencies\BaseComponent
   */
 
   public function getMIPdata($address = array()){
+    //$adres['positionering']
+    //$adres['straat']
+    //$adres['hnr'] 
+    //$adres['toevoegsel'] 
+    //$adres['postcode']
+    //$adres['plaats']
+    //$adres['gemeente']
+
+
      // $this->table('MIP')->
     //   $query = 'SELECT * FROM _mip 
     // WHERE gemeente = "'.$GLOBALS['gemeente-naam'].'" 
@@ -51,7 +61,63 @@ class Helpers extends \dependencies\BaseComponent
     //   AND toevoeging ="'.$toevoegsel.'";' : $query = $query.' AND toevoeging is NULL;';
     
     // $mipresults = mysqli_query($con,$query);
+    $result[0]['datering_o'] = "";
+    $result[0]['oorspr_fun'] = "";
+    $result[0]['architect'] = "";
+    $result[0]['typech_obj'] = "";
+    $result[0]['naam'] = "";
+    $result[0]['naam'] = "";
+    $result[0]['pc'] = "";
+    $result[0]['mip_sleute'] = "";
+    $result[0]["x_coord"] = "";
+    $result[0]["y_coord"] = "";
+
+    $result[0]['typech_obj']  = substr($result[0]['typech_obj'], 11);
+    return $result;
     // 
+
+  }
+
+  public function mergeItems($base, $addition, $separator){
+    // var_dump ($this->table('MergeOptions')->pk(6));
+    if(!(empty($base)) && !(empty($addition))){
+      switch ($separator) {
+         case '0':
+           # spatie
+           $base .= " ".$addition; 
+           break;
+        case '1':
+          # geen spatie
+          $base .= $addition;
+          break;
+        case '2':
+            # spatie + cursief
+           $base .= " ''".$addition."''";;
+            break;  
+         case '3':
+           # streepje
+           $base .= "-".$addition;
+           break;
+         case '4':
+           # comma
+           $base .= ", ".$addition;
+           break;
+         case '5':
+           # in ... stijl
+           $base .=" in ".$addition." stijl";
+           break;
+       }
+       return $base;
+    }
+    elseif (empty($base) && !(empty($addition))) { 
+      if ($separator == '5'){
+        return "Gebouw in ".$addition." stijl";
+      }    
+      return $addition;
+    }
+    else{
+      return $base;
+    }
 
   }
   public function getFooter(){
@@ -69,12 +135,11 @@ class Helpers extends \dependencies\BaseComponent
       $j = 0;
       for ($i=0; $i <count($data); $i++){
         
-        $data[$i] = mb_convert_encoding( $data[$i], 'UTF-8');
         $data[$i] = trim($data[$i]);
-        $data[$i] = str_replace("<", "&lt;",  $data[$i]);
-        $data[$i] = str_replace(">", "&gt;",  $data[$i]);
-        $data[$i] = str_replace("'", "&apos;",$data[$i]);
-        $data[$i] = str_replace("–", "-",     $data[$i]);
+        $data[$i] = str_replace("<", "&lt;", $data[$i]);
+        $data[$i] = str_replace(">", "&gt;", $data[$i]);
+        $data[$i] = str_replace("–", "-", $data[$i]);
+        $data[$i] = mb_convert_encoding( $data[$i], 'UTF-8');
         if($data[$i] == ""){
           $j++;
         }
@@ -295,33 +360,43 @@ public function array_sort($a, $subkey) {
   public function rd2wgs ($x, $y){
     // Calculate WGS84 coördinates
     /* retrieved at http://www.god-object.com/2009/10/23/convert-rijksdriehoekscordinaten-to-latitudelongitude/ */
-    $dX = ($x - 155000) * pow(10, - 5);
-    $dY = ($y - 463000) * pow(10, - 5);
-    $SomN = (3235.65389 * $dY) + (- 32.58297 * pow($dX, 2)) + (- 0.2475 *
-         pow($dY, 2)) + (- 0.84978 * pow($dX, 2) *
-         $dY) + (- 0.0655 * pow($dY, 3)) + (- 0.01709 *
-         pow($dX, 2) * pow($dY, 2)) + (- 0.00738 *
-         $dX) + (0.0053 * pow($dX, 4)) + (- 0.00039 *
-         pow($dX, 2) * pow($dY, 3)) + (0.00033 * pow(
-            $dX, 4) * $dY) + (- 0.00012 *
-         $dX * $dY);
-    $SomE = (5260.52916 * $dX) + (105.94684 * $dX * $dY) + (2.45656 *
-         $dX * pow($dY, 2)) + (- 0.81885 * pow(
-            $dX, 3)) + (0.05594 *
-         $dX * pow($dY, 3)) + (- 0.05607 * pow(
-            $dX, 3) * $dY) + (0.01199 *
-         $dY) + (- 0.00256 * pow($dX, 3) * pow(
-            $dY, 2)) + (0.00128 *
-         $dX * pow($dY, 4)) + (0.00022 * pow($dY,
-            2)) + (- 0.00022 * pow(
-            $dX, 2)) + (0.00026 *
-         pow($dX, 5));
- 
-    $Latitude = 52.15517 + ($SomN / 3600);
-    $Longitude = 5.387206 + ($SomE / 3600);
- 
-    return array(
-        'lat' => $Latitude ,
-        'long' => $Longitude);
+    if (empty($x)!= true && empty($y)!=true){
+      $dX = ($x - 155000) * pow(10, - 5);
+      $dY = ($y - 463000) * pow(10, - 5);
+      $SomN = (3235.65389 * $dY) + (- 32.58297 * pow($dX, 2)) + (- 0.2475 *
+           pow($dY, 2)) + (- 0.84978 * pow($dX, 2) *
+           $dY) + (- 0.0655 * pow($dY, 3)) + (- 0.01709 *
+           pow($dX, 2) * pow($dY, 2)) + (- 0.00738 *
+           $dX) + (0.0053 * pow($dX, 4)) + (- 0.00039 *
+           pow($dX, 2) * pow($dY, 3)) + (0.00033 * pow(
+              $dX, 4) * $dY) + (- 0.00012 *
+           $dX * $dY);
+      $SomE = (5260.52916 * $dX) + (105.94684 * $dX * $dY) + (2.45656 *
+           $dX * pow($dY, 2)) + (- 0.81885 * pow(
+              $dX, 3)) + (0.05594 *
+           $dX * pow($dY, 3)) + (- 0.05607 * pow(
+              $dX, 3) * $dY) + (0.01199 *
+           $dY) + (- 0.00256 * pow($dX, 3) * pow(
+              $dY, 2)) + (0.00128 *
+           $dX * pow($dY, 4)) + (0.00022 * pow($dY,
+              2)) + (- 0.00022 * pow(
+              $dX, 2)) + (0.00026 *
+           pow($dX, 5));
+   
+      $Latitude  = 52.15517 + ($SomN / 3600);
+      $Longitude = 5.387206 + ($SomE / 3600);
+      
+      $Latitude  = substr($Latitude, 0, -5);
+      $Longitude = substr($Longitude, 0, -6);
+
+      return array(
+          'lat' => $Latitude ,
+          'long' => $Longitude);
     }
+    else {
+      return array(
+          'lat' => "" ,
+          'long' => "");
+    }
+  }
 }

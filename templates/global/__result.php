@@ -41,7 +41,7 @@ foreach ($data->rows as $key => $value  ){
   echo (empty($value['coordinates']['long']))? " |lon =<span class='lon' ></span> " : " |lon =<span class='lon' >".$value['coordinates']['long']."</span>";?>
   | objnr =<?php    echo $value['objectnr'];?>
   | gemcode =<?php  echo $data->cbs->gemcode->get();
-  echo (empty($value['mip']     ))? "" : '|MIP_nr ='.$value['mip'];
+  echo (empty($value['mip']       ))? "" : '|MIP_nr ='.$value['mip'];
   echo (empty($value['kadaster']  ))? "" : '|kadaster ='. $value['kadaster'];?>
   | rijksmonument =<?php  echo $value['rijksmonument'];?>
   | aangewezen =<?php   echo $value['aangewezen'];?>
@@ -177,8 +177,8 @@ function getLatLong(address) {
             lat: results[0].geometry.location.lat(),
             lon: results[0].geometry.location.lng()
         };
-    latlon.lon = latlon.lon.toString().substr(0,9);
-    latlon.lat = latlon.lat.toString().substr(0,10);
+        latlon.lon = latlon.lon.toString().substr(0,9);
+        latlon.lat = latlon.lat.toString().substr(0,10);
     
         //Resolve the deferred with it.
         D.resolve(latlon);
